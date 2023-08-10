@@ -1,8 +1,7 @@
-use core::time::Duration;
-use ggez::graphics::{self, Color, DrawParam, Text, TextFragment};
-use ggez::mint::Point2;
+use ggez::graphics::{self, Color, DrawParam, Quad};
 use ggez::{conf, event, Context, ContextBuilder, GameError, GameResult};
 
+const CELL_SIZE: f32 = 50.;
 struct State {}
 
 impl ggez::event::EventHandler<GameError> for State {
@@ -21,7 +20,14 @@ impl ggez::event::EventHandler<GameError> for State {
 
 impl State {
     fn draw_snake(&mut self, canvas: &mut graphics::Canvas) {
-        print!("Hrllo");
+        let snake = Quad {};
+        canvas.draw(
+            &snake,
+            DrawParam::new()
+                .dest([150., 150.])
+                .color(Color::GREEN)
+                .scale([CELL_SIZE, CELL_SIZE]),
+        );
     }
 }
 
