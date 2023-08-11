@@ -54,23 +54,51 @@ impl State {
 
     fn get_next_body_pos(&self) -> Snake {
         let mut new_snake = self.snake.clone();
+        let mut new_head = new_snake.body[0];
+
+        // Find where the head should go next
+        // If the head reaches an edge of the screen, make it
+        // appear on the other side
         match self.snake.direction {
-            Direction::Up => new_snake.body[0].row -= 1,
-            Direction::Down => new_snake.body[0].row += 1,
-            Direction::Left => new_snake.body[0].column -= 1,
-            Direction::Right => new_snake.body[0].column += 1,
+            Direction::Up => {
+                if new_head.row - 1 == 0 {
+                    new_head.row = self.grid.height_in_cells;
+                } else {
+                    new_head.row -= 1;
+                }
+            }
+            Direction::Down => {
+                if new_head.row + 1 > self.grid.height_in_cells {
+                    new_head.row = 0;
+                } else {
+                    new_head.row += 1;
+                }
+            }
+            Direction::Left => {
+                if new_head.column - 1 == 0 {
+                    new_head.column = self.grid.width_in_cells;
+                } else {
+                    new_head.column -= 1;
+                }
+            }
+            Direction::Right => {
+                if new_head.column + 1 > self.grid.width_in_cells {
+                    new_head.column = 0;
+                } else {
+                    new_head.column += 1;
+                }
+            }
         }
+        // Move the rest of the body
         for i in 1..self.snake.body.len() {
             new_snake.body[i] = self.snake.body[i - 1];
         }
+        new_snake.body[0] = new_head;
         return new_snake;
     }
 
     fn draw_cell(&self, canvas: &mut Canvas, row: u32, column: u32, color: Color) {
-        let grid_width_in_cells = self.grid.width_in_cells;
-        let grid_height_in_cells = self.grid.height_in_cells;
-        let invalid_position =
-            row < 1 || row > grid_width_in_cells || column < 1 || column > grid_height_in_cells;
+        let invalid_position = row > self.grid.height_in_cells || column > self.grid.width_in_cells;
         if !invalid_position {
             canvas.draw(
                 &Quad {},
@@ -101,7 +129,10 @@ fn main() {
         .expect("Could not create context!");
 
     let snake = Snake {
-        body: vec![BodyCell { row: 20, column: 5 }],
+        body: vec![
+            BodyCell { row: 20, column: 5 },
+            BodyCell { row: 20, column: 6 },
+        ],
         direction: Direction::Right,
     };
     let grid = init_grid(&ctx);
