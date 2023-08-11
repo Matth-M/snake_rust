@@ -6,16 +6,19 @@ struct State {
     snake: Snake,
 }
 
+#[derive(Clone)]
 struct Snake {
     body: Vec<BodyCell>,
     direction: Direction,
 }
 
+#[derive(Clone, Copy)]
 struct BodyCell {
-    x: u32,
-    y: u32,
+    row: u32,
+    column: u32,
 }
 
+#[derive(Clone)]
 enum Direction {
     Left,
     Right,
@@ -25,6 +28,7 @@ enum Direction {
 
 impl ggez::event::EventHandler<GameError> for State {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
+        self.snake = self.get_next_body_pos();
         Ok(())
     }
 
@@ -38,8 +42,22 @@ impl ggez::event::EventHandler<GameError> for State {
 impl State {
     fn draw_snake(&self, canvas: &mut Canvas, ctx: &Context) {
         for cell in &self.snake.body {
-            self.draw_cell(canvas, ctx, cell.x, cell.y, Color::GREEN);
+            self.draw_cell(canvas, ctx, cell.row, cell.column, Color::GREEN);
         }
+    }
+
+    fn get_next_body_pos(&self) -> Snake {
+        let mut new_snake = self.snake.clone();
+        match self.snake.direction {
+            Direction::Up => new_snake.body[0].row -= 1,
+            Direction::Down => new_snake.body[0].row += 1,
+            Direction::Left => new_snake.body[0].column -= 1,
+            Direction::Right => new_snake.body[0].column += 1,
+        }
+        for i in 1..self.snake.body.len() {
+            new_snake.body[i] = self.snake.body[i - 1];
+        }
+        return new_snake;
     }
 
     fn draw_cell(&self, canvas: &mut Canvas, ctx: &Context, row: u32, column: u32, color: Color) {
@@ -62,7 +80,7 @@ impl State {
 
 fn main() {
     let snake = Snake {
-        body: vec![BodyCell { x: 20, y: 5 }],
+        body: vec![BodyCell { row: 20, column: 5 }],
         direction: Direction::Right,
     };
     let state = State { snake };
