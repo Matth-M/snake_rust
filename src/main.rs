@@ -1,4 +1,5 @@
 use ggez::graphics::{self, Canvas, Color, DrawParam, Quad};
+use ggez::input::keyboard::{KeyCode, KeyInput, KeyMods};
 use ggez::{conf, event, Context, ContextBuilder, GameError, GameResult};
 
 const CELL_SIZE: f32 = 20.;
@@ -33,7 +34,18 @@ enum Direction {
 }
 
 impl ggez::event::EventHandler<GameError> for State {
-    fn update(&mut self, _ctx: &mut Context) -> GameResult {
+    fn update(&mut self, ctx: &mut Context) -> GameResult {
+        // Check for keypress to change direction
+        let k_ctx = &ctx.keyboard;
+        if k_ctx.is_key_pressed(KeyCode::Z) {
+            self.snake.direction = Direction::Up;
+        } else if k_ctx.is_key_pressed(KeyCode::Q) {
+            self.snake.direction = Direction::Left;
+        } else if k_ctx.is_key_pressed(KeyCode::D) {
+            self.snake.direction = Direction::Right;
+        } else if k_ctx.is_key_pressed(KeyCode::S) {
+            self.snake.direction = Direction::Down;
+        }
         self.snake = self.get_next_body_pos();
         Ok(())
     }
