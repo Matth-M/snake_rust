@@ -8,11 +8,16 @@ const CELL_SIZE: f32 = 20.;
 struct State {
     snake: Snake,
     grid: Grid,
+    food: Food,
+}
+
+struct Food {
+    position: Cell,
 }
 
 #[derive(Clone)]
 struct Snake {
-    body: Vec<BodyCell>,
+    body: Vec<Cell>,
     direction: Direction,
 }
 
@@ -22,7 +27,7 @@ struct Grid {
 }
 
 #[derive(Clone, Copy)]
-struct BodyCell {
+struct Cell {
     row: u32,
     column: u32,
 }
@@ -58,6 +63,12 @@ impl ggez::event::EventHandler<GameError> for State {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let mut canvas = graphics::Canvas::from_frame(ctx, Color::BLACK);
         self.draw_snake(&mut canvas);
+        self.draw_cell(
+            &mut canvas,
+            self.food.position.row,
+            self.food.position.column,
+            Color::RED,
+        );
         canvas.finish(ctx)
     }
 }
@@ -147,14 +158,23 @@ fn main() {
 
     let snake = Snake {
         body: vec![
-            BodyCell { row: 20, column: 7 },
-            BodyCell { row: 20, column: 5 },
-            BodyCell { row: 20, column: 6 },
+            Cell { row: 20, column: 7 },
+            Cell { row: 20, column: 5 },
+            Cell { row: 20, column: 6 },
         ],
         direction: Direction::Right,
     };
     let grid = init_grid(&ctx);
-    let state = State { snake, grid };
+    let state = State {
+        snake,
+        grid,
+        food: Food {
+            position: Cell {
+                row: 17,
+                column: 13,
+            },
+        },
+    };
 
     event::run(ctx, event_loop, state);
 }
