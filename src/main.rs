@@ -147,6 +147,7 @@ fn main() {
 
     let snake = Snake {
         body: vec![
+            BodyCell { row: 20, column: 7 },
             BodyCell { row: 20, column: 5 },
             BodyCell { row: 20, column: 6 },
         ],
