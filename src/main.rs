@@ -133,6 +133,11 @@ impl State {
             &text,
             DrawParam::new().dest([screen_center_x, screen_center_y]),
         );
+        let text = ggez::graphics::Text::new(format!("Snake length: {}", self.snake.body.len()));
+        canvas.draw(
+            &text,
+            DrawParam::new().dest([screen_center_x, screen_center_y + 40.]),
+        );
         let text = ggez::graphics::Text::new("Press r to restart.");
         canvas.draw(
             &text,
