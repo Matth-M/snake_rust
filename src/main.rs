@@ -47,17 +47,38 @@ impl ggez::event::EventHandler<GameError> for State {
         // Slow down update rate to make the snake controllable
         thread::sleep(Duration::from_millis(100));
 
+        let k_ctx = &ctx.keyboard;
+
         // Lose if snake goes on its body
         for cell_nb in 1..self.snake.body.len() {
             if self.snake.body[0] == self.snake.body[cell_nb] {
                 self.end_game = true;
                 println!("YOU LOSE!");
+                if k_ctx.is_key_pressed(KeyCode::R) {
+                    println!("Restarted");
+                    let new_snake = Snake {
+                        body: vec![
+                            Cell { row: 20, column: 7 },
+                            Cell { row: 20, column: 5 },
+                            Cell { row: 20, column: 6 },
+                        ],
+                        direction: Direction::Right,
+                    };
+                    self.end_game = false;
+                    self.snake = new_snake;
+                    let new_food = Food {
+                        position: Cell {
+                            row: random::<u32>() % self.grid.height_in_cells,
+                            column: random::<u32>() % self.grid.width_in_cells,
+                        },
+                    };
+                    self.food = new_food;
+                }
                 return Ok(());
             }
         }
 
         // Check for keypress to change direction
-        let k_ctx = &ctx.keyboard;
         if k_ctx.is_key_pressed(KeyCode::Z) {
             self.snake.direction = Direction::Up;
         } else if k_ctx.is_key_pressed(KeyCode::Q) {
@@ -111,6 +132,11 @@ impl State {
         canvas.draw(
             &text,
             DrawParam::new().dest([screen_center_x, screen_center_y]),
+        );
+        let text = ggez::graphics::Text::new("Press r to restart.");
+        canvas.draw(
+            &text,
+            DrawParam::new().dest([screen_center_x, screen_center_y + 20.]),
         );
     }
     fn draw_snake(&self, canvas: &mut Canvas) {
