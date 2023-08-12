@@ -27,7 +27,7 @@ struct Grid {
     height_in_cells: u32,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 struct Cell {
     row: u32,
     column: u32,
@@ -57,7 +57,12 @@ impl ggez::event::EventHandler<GameError> for State {
         } else if k_ctx.is_key_pressed(KeyCode::S) {
             self.snake.direction = Direction::Down;
         }
-        self.snake = self.get_next_body_pos();
+        if self.snake.body[0] == self.food.position {
+            self.snake = self.get_next_body_pos(true);
+        } else {
+            self.snake = self.get_next_body_pos(false);
+        }
+
         Ok(())
     }
 
@@ -81,7 +86,7 @@ impl State {
         }
     }
 
-    fn get_next_body_pos(&self) -> Snake {
+    fn get_next_body_pos(&self, appendCell: bool) -> Snake {
         let mut new_snake = self.snake.clone();
         let mut new_head = new_snake.body[0];
 
@@ -123,6 +128,14 @@ impl State {
             new_snake.body[i] = self.snake.body[i - 1];
         }
         new_snake.body[0] = new_head;
+        if appendCell {
+            let last_cell = self.snake.body.last();
+            let last_cell = match last_cell {
+                Some(cell) => cell,
+                None => &Cell { row: 1, column: 1 },
+            };
+            new_snake.body.push(*last_cell);
+        }
         return new_snake;
     }
 
