@@ -10,6 +10,7 @@ struct State {
     snake: Snake,
     grid: Grid,
     food: Food,
+    end_game: bool,
 }
 
 struct Food {
@@ -46,6 +47,15 @@ impl ggez::event::EventHandler<GameError> for State {
         // Slow down update rate to make the snake controllable
         thread::sleep(Duration::from_millis(100));
 
+        // Lose if snake goes on its body
+        for cell_nb in 1..self.snake.body.len() {
+            if self.snake.body[0] == self.snake.body[cell_nb] {
+                self.end_game = true;
+                println!("YOU LOSE!");
+                return Ok(());
+            }
+        }
+
         // Check for keypress to change direction
         let k_ctx = &ctx.keyboard;
         if k_ctx.is_key_pressed(KeyCode::Z) {
@@ -57,7 +67,8 @@ impl ggez::event::EventHandler<GameError> for State {
         } else if k_ctx.is_key_pressed(KeyCode::S) {
             self.snake.direction = Direction::Down;
         }
-        // Snake eats food
+
+        // If snake eats food, make him grow
         if self.snake.body[0] == self.food.position {
             self.snake = self.get_next_body_pos(true);
             let new_food = Food {
@@ -70,24 +81,38 @@ impl ggez::event::EventHandler<GameError> for State {
         } else {
             self.snake = self.get_next_body_pos(false);
         }
-
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let mut canvas = graphics::Canvas::from_frame(ctx, Color::BLACK);
-        self.draw_snake(&mut canvas);
-        self.draw_cell(
-            &mut canvas,
-            self.food.position.row,
-            self.food.position.column,
-            Color::RED,
-        );
-        canvas.finish(ctx)
+        if self.end_game {
+            self.draw_end_game_screen(&mut canvas);
+            return canvas.finish(ctx);
+        } else {
+            self.draw_snake(&mut canvas);
+            self.draw_cell(
+                &mut canvas,
+                self.food.position.row,
+                self.food.position.column,
+                Color::RED,
+            );
+            canvas.finish(ctx)
+        }
     }
 }
 
 impl State {
+    fn draw_end_game_screen(&self, canvas: &mut Canvas) -> () {
+        let text = ggez::graphics::Text::new("YOU LOSE!");
+        let screen_center_x = (self.grid.width_in_cells as f32 * CELL_SIZE) / 2.0;
+        let screen_center_y = (self.grid.height_in_cells as f32 * CELL_SIZE) / 2.0;
+
+        canvas.draw(
+            &text,
+            DrawParam::new().dest([screen_center_x, screen_center_y]),
+        );
+    }
     fn draw_snake(&self, canvas: &mut Canvas) {
         for cell in &self.snake.body {
             self.draw_cell(canvas, cell.row, cell.column, Color::GREEN);
@@ -194,7 +219,12 @@ fn main() {
         },
     };
 
-    let state = State { snake, grid, food };
+    let state = State {
+        snake,
+        grid,
+        food,
+        end_game: false,
+    };
 
     event::run(ctx, event_loop, state);
 }
