@@ -57,8 +57,16 @@ impl ggez::event::EventHandler<GameError> for State {
         } else if k_ctx.is_key_pressed(KeyCode::S) {
             self.snake.direction = Direction::Down;
         }
+        // Snake eats food
         if self.snake.body[0] == self.food.position {
             self.snake = self.get_next_body_pos(true);
+            let new_food = Food {
+                position: Cell {
+                    row: random::<u32>() % self.grid.height_in_cells,
+                    column: random::<u32>() % self.grid.width_in_cells,
+                },
+            };
+            self.food = new_food;
         } else {
             self.snake = self.get_next_body_pos(false);
         }
@@ -86,7 +94,7 @@ impl State {
         }
     }
 
-    fn get_next_body_pos(&self, appendCell: bool) -> Snake {
+    fn get_next_body_pos(&self, append_cell: bool) -> Snake {
         let mut new_snake = self.snake.clone();
         let mut new_head = new_snake.body[0];
 
@@ -128,7 +136,7 @@ impl State {
             new_snake.body[i] = self.snake.body[i - 1];
         }
         new_snake.body[0] = new_head;
-        if appendCell {
+        if append_cell {
             let last_cell = self.snake.body.last();
             let last_cell = match last_cell {
                 Some(cell) => cell,
