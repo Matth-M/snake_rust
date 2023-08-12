@@ -34,7 +34,7 @@ struct Cell {
     column: u32,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 enum Direction {
     Left,
     Right,
@@ -79,13 +79,15 @@ impl ggez::event::EventHandler<GameError> for State {
         }
 
         // Check for keypress to change direction
-        if k_ctx.is_key_pressed(KeyCode::Z) {
+        // Prevent conflicting direction change, e.g. going left while head is currently going
+        // right
+        if k_ctx.is_key_pressed(KeyCode::Z) && self.snake.direction != Direction::Down {
             self.snake.direction = Direction::Up;
-        } else if k_ctx.is_key_pressed(KeyCode::Q) {
+        } else if k_ctx.is_key_pressed(KeyCode::Q) && self.snake.direction != Direction::Right {
             self.snake.direction = Direction::Left;
-        } else if k_ctx.is_key_pressed(KeyCode::D) {
+        } else if k_ctx.is_key_pressed(KeyCode::D) && self.snake.direction != Direction::Left {
             self.snake.direction = Direction::Right;
-        } else if k_ctx.is_key_pressed(KeyCode::S) {
+        } else if k_ctx.is_key_pressed(KeyCode::S) && self.snake.direction != Direction::Up {
             self.snake.direction = Direction::Down;
         }
 
