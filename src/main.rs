@@ -1,6 +1,7 @@
 use ggez::graphics::{self, Canvas, Color, DrawParam, Quad};
-use ggez::input::keyboard::{KeyCode, KeyInput, KeyMods};
+use ggez::input::keyboard::KeyCode;
 use ggez::{conf, event, Context, ContextBuilder, GameError, GameResult};
+use rand::random;
 use std::thread;
 use std::time::Duration;
 
@@ -165,16 +166,14 @@ fn main() {
         direction: Direction::Right,
     };
     let grid = init_grid(&ctx);
-    let state = State {
-        snake,
-        grid,
-        food: Food {
-            position: Cell {
-                row: 17,
-                column: 13,
-            },
+    let food = Food {
+        position: Cell {
+            row: random::<u32>() % &grid.height_in_cells,
+            column: random::<u32>() % &grid.width_in_cells,
         },
     };
+
+    let state = State { snake, grid, food };
 
     event::run(ctx, event_loop, state);
 }
