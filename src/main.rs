@@ -45,7 +45,7 @@ enum Direction {
 impl ggez::event::EventHandler<GameError> for State {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
         // Slow down update rate to make the snake controllable
-        thread::sleep(Duration::from_millis(100));
+        thread::sleep(Duration::from_millis(75));
 
         let k_ctx = &ctx.keyboard;
 
