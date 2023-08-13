@@ -161,7 +161,7 @@ impl State {
         // appear on the other side
         match self.snake.direction {
             Direction::Up => {
-                if new_head.row - 1 == 0 {
+                if new_head.row == 0 {
                     new_head.row = self.grid.height_in_cells;
                 } else {
                     new_head.row -= 1;
@@ -175,7 +175,7 @@ impl State {
                 }
             }
             Direction::Left => {
-                if new_head.column - 1 == 0 {
+                if new_head.column == 0 {
                     new_head.column = self.grid.width_in_cells;
                 } else {
                     new_head.column -= 1;
