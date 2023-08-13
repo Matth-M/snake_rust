@@ -53,9 +53,7 @@ impl ggez::event::EventHandler<GameError> for State {
         for cell_nb in 1..self.snake.body.len() {
             if self.snake.body[0] == self.snake.body[cell_nb] {
                 self.end_game = true;
-                println!("YOU LOSE!");
                 if k_ctx.is_key_pressed(KeyCode::R) {
-                    println!("Restarted");
                     let new_snake = Snake {
                         body: vec![
                             Cell { row: 20, column: 7 },
