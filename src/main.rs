@@ -79,13 +79,21 @@ impl ggez::event::EventHandler<GameError> for State {
         // Check for keypress to change direction
         // Prevent conflicting direction change, e.g. going left while head is currently going
         // right
-        if k_ctx.is_key_pressed(KeyCode::Z) && self.snake.direction != Direction::Down {
+        if (k_ctx.is_key_pressed(KeyCode::Z) || k_ctx.is_key_pressed(KeyCode::Up))
+            && self.snake.direction != Direction::Down
+        {
             self.snake.direction = Direction::Up;
-        } else if k_ctx.is_key_pressed(KeyCode::Q) && self.snake.direction != Direction::Right {
+        } else if (k_ctx.is_key_pressed(KeyCode::Q) || k_ctx.is_key_pressed(KeyCode::Left))
+            && self.snake.direction != Direction::Right
+        {
             self.snake.direction = Direction::Left;
-        } else if k_ctx.is_key_pressed(KeyCode::D) && self.snake.direction != Direction::Left {
+        } else if (k_ctx.is_key_pressed(KeyCode::D) || k_ctx.is_key_pressed(KeyCode::Right))
+            && self.snake.direction != Direction::Left
+        {
             self.snake.direction = Direction::Right;
-        } else if k_ctx.is_key_pressed(KeyCode::S) && self.snake.direction != Direction::Up {
+        } else if (k_ctx.is_key_pressed(KeyCode::S) || k_ctx.is_key_pressed(KeyCode::Down))
+            && self.snake.direction != Direction::Up
+        {
             self.snake.direction = Direction::Down;
         }
 
