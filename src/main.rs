@@ -162,13 +162,13 @@ impl State {
         match self.snake.direction {
             Direction::Up => {
                 if new_head.row == 0 {
-                    new_head.row = self.grid.height_in_cells;
+                    new_head.row = self.grid.height_in_cells - 1;
                 } else {
                     new_head.row -= 1;
                 }
             }
             Direction::Down => {
-                if new_head.row + 1 > self.grid.height_in_cells {
+                if new_head.row + 1 > self.grid.height_in_cells - 1 {
                     new_head.row = 0;
                 } else {
                     new_head.row += 1;
@@ -176,20 +176,19 @@ impl State {
             }
             Direction::Left => {
                 if new_head.column == 0 {
-                    new_head.column = self.grid.width_in_cells;
+                    new_head.column = self.grid.width_in_cells - 1;
                 } else {
                     new_head.column -= 1;
                 }
             }
             Direction::Right => {
-                if new_head.column + 1 > self.grid.width_in_cells {
+                if new_head.column + 1 > self.grid.width_in_cells - 1 {
                     new_head.column = 0;
                 } else {
                     new_head.column += 1;
                 }
             }
-        }
-        // Move the rest of the body
+        } // Move the rest of the body
         for i in 1..self.snake.body.len() {
             new_snake.body[i] = self.snake.body[i - 1];
         }
